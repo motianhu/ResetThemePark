@@ -78,7 +78,27 @@ public class ClassificationAction implements IAction {
 				int lastIndex = fileName.lastIndexOf(Util.DIR_SPLIT);
 				String desDir = targetPath + Util.DIR_SPLIT
 						+ fileName.substring(0, lastIndex);
-				desDir = desDir.replace(Util.DIR_SPLIT + Util.res, "");
+
+				if (!desDir.contains(Util.DIR_SPLIT + Util.Launcher_Business
+						+ Util.DIR_SPLIT)) {
+					desDir = desDir.replace(Util.DIR_SPLIT + Util.res, "");
+				}
+				if (desDir.contains(Util.DIR_SPLIT + Util.Launcher_Bubble_L
+						+ Util.DIR_SPLIT)) {
+					int startIndex = desDir.lastIndexOf(Util.DIR_SPLIT
+							+ Util.Launcher_Bubble_L + Util.DIR_SPLIT);
+					desDir = desDir.substring(0, startIndex);
+					desDir += Util.DIR_SPLIT + Util.Launcher_Bubble_W
+							+ Util.DIR_SPLIT + Util.Launcher_Default
+							+ Util.DIR_SPLIT;
+				} else if (desDir.contains(Util.DIR_SPLIT
+						+ Util.Launcher_Indicator_L + Util.DIR_SPLIT)) {
+					desDir = desDir.replace(Util.DIR_SPLIT
+							+ Util.Launcher_Indicator_L + Util.DIR_SPLIT,
+							Util.DIR_SPLIT + Util.Launcher_Indicator_W
+									+ Util.DIR_SPLIT);
+				}
+
 				try {
 					ZipFileAction.copyFileWithDir(file.getAbsolutePath(),
 							desDir,

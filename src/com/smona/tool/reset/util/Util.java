@@ -26,7 +26,7 @@ public class Util {
 	public static final String drawable = "drawable";
 	public static final String res = "res";
 	public static final String Color_JING = "#";
-	
+
 	public static final String Attachment = "Attachment";
 	public static final String Bottom = "Bottom";
 	public static final String Color = "Color";
@@ -45,6 +45,13 @@ public class Util {
 	public static final String Thirdpart_oversea = "Thirdpart_oversea";
 	public static final String language_properties = "language.properties";
 	public static final String since_properties = "since.properties";
+
+	public static final String Launcher_Bubble_L = "bubble";
+	public static final String Launcher_Bubble_W = "Bubble";
+	public static final String Launcher_Default = "default";
+	public static final String Launcher_Indicator_L = "indicator";
+	public static final String Launcher_Indicator_W = "Indicator";
+	public static final String Launcher_Business = "business";
 
 	public static void printDetail(String msg) {
 		Logger.printDetail(msg);

@@ -64,7 +64,8 @@ public class TrimAction implements IAction {
 	private void trimFile(File file) {
 		if (Util.language_properties.equalsIgnoreCase(file.getName())) {
 			modifyScreenDensity(file);
-			modifyLanguageTitle(file);
+			// modifyDescript(file);
+			// modifyLanguageTitle(file);
 		}
 	}
 
@@ -73,7 +74,7 @@ public class TrimAction implements IAction {
 		if (value != null) {
 			String screen = SCREENDENY.get(value);
 			if (screen != null) {
-				updateProps(file, "screen_density", value);
+				updateProps(file, "screen_density", screen);
 			}
 		}
 	}
@@ -81,19 +82,39 @@ public class TrimAction implements IAction {
 	private void modifyLanguageTitle(File file) {
 		String lang = getPropValue(file, "zh_CN");
 		if (lang != null) {
-			String str = ascii2native(lang);
-			System.out.println("ios-8859-1: " + lang + "; gbk: " + str);
+			String str = asciitocn(lang);
+			System.out.println("modifyLanguageTitle ios-8859-1: " + lang
+					+ "; gbk: " + str);
 			updateProps(file, "zh_CN", str);
 		}
 	}
 
-	public static String ascii2native(String ascii) {
-		int n = ascii.length() / 6;
-		StringBuilder sb = new StringBuilder(n);
-		for (int i = 0, j = 2; i < n; i++, j += 6) {
-			String code = ascii.substring(j, j + 4);
-			char ch = (char) Integer.parseInt(code, 16);
+	private void modifyDescript(File file) {
+		String descript = getPropValue(file, "discript");
+		if (descript != null) {
+			String str = cntoascii(descript);
+			String str1 = asciitocn(str);
+			System.out.println("modifyDescript utf-8: " + descript + ", str: "
+					+ str + ", str1: " + str1);
+			updateProps(file, "discript", str);
+		}
+	}
+
+	public static String asciitocn(String ascii) {
+		String[] splits = ascii.split("\\\\u");
+		StringBuilder sb = new StringBuilder(splits.length);
+		for (int i = 1; i < splits.length; i++) {
+			char ch = (char) Integer.valueOf(splits[i], 16).intValue();
 			sb.append(ch);
+		}
+		return sb.toString();
+	}
+
+	public static String cntoascii(String ascii) {
+		char[] ca = ascii.toCharArray();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < ca.length; i++) {
+			sb.append("\\u" + Integer.toString(ca[i], 16));
 		}
 		return sb.toString();
 	}
