@@ -26,6 +26,8 @@ public class Util {
 	public static final String drawable = "drawable";
 	public static final String res = "res";
 	public static final String Color_JING = "#";
+	
+	public static final String ATTACH_JSON = "attach.json";
 
 	public static final String Attachment = "Attachment";
 	public static final String Bottom = "Bottom";

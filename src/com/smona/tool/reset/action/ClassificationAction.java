@@ -51,29 +51,25 @@ public class ClassificationAction implements IAction {
 			}
 			fileName = file.getName().replace(Util.REPLACE_PATH_SIGN,
 					Util.DIR_SPLIT);
-			if (!isHasDir(fileName)) {
+
+			// root file
+			if (isSingleFile(fileName)) {
 				if (fileName.equalsIgnoreCase(Util.language_properties)
 						|| fileName.equalsIgnoreCase(Util.since_properties)) {
 					FileOperator.fileChannelCopy(file, targetPath
 							+ Util.DIR_SPLIT + fileName);
+				} else if (fileName.equalsIgnoreCase(Util.ATTACH_JSON)) {
+					String desDir = targetPath + Util.DIR_SPLIT
+							+ Util.Attachment;
+					try {
+						ZipFileAction.copyFileWithDir(file.getAbsolutePath(),
+								desDir, fileName);
+					} catch (IOException e) {
+						Util.printDetail(e.toString());
+						e.printStackTrace();
+					}
 				}
-			} else if (isDrawableArray(fileName)) {
-				int lastIndex = fileName.lastIndexOf(Util.DIR_SPLIT);
-
-				String desDir = targetPath + Util.DIR_SPLIT + Util.DIR_SPLIT
-						+ Util.drawable_array + Util.DIR_SPLIT;
-				try {
-					ZipFileAction.copyFileWithDir(
-							file.getAbsolutePath(),
-							desDir,
-							Util.Lock
-									+ Util.Color_JING
-									+ fileName.substring(lastIndex + 1,
-											fileName.length()));
-				} catch (IOException e) {
-					Util.printDetail(e.toString());
-					e.printStackTrace();
-				}
+				// contain Launcher
 			} else if (isSpecialFile(fileName)) {
 				int lastIndex = fileName.lastIndexOf(Util.DIR_SPLIT);
 				String desDir = targetPath + Util.DIR_SPLIT
@@ -107,6 +103,7 @@ public class ClassificationAction implements IAction {
 					Util.printDetail(e.toString());
 					e.printStackTrace();
 				}
+				// contain Other
 			} else if (isOtherFile(fileName)) {
 				int lastIndex = fileName.lastIndexOf(Util.DIR_SPLIT);
 				String desDir = targetPath + Util.DIR_SPLIT
@@ -131,7 +128,7 @@ public class ClassificationAction implements IAction {
 					Util.printDetail(e.toString());
 					e.printStackTrace();
 				}
-
+				// contain Color
 			} else if (isColor(fileName)) {
 				int lastIndex = fileName.lastIndexOf(Util.DIR_SPLIT);
 				String desDir = targetPath + Util.DIR_SPLIT + Util.Color;
@@ -148,6 +145,7 @@ public class ClassificationAction implements IAction {
 					e.printStackTrace();
 				}
 
+				// contain framework
 			} else if (isLock(fileName)) {
 				int lastIndex = fileName.lastIndexOf(Util.DIR_SPLIT);
 				String desDir = targetPath + Util.DIR_SPLIT + Util.Lock
@@ -156,6 +154,16 @@ public class ClassificationAction implements IAction {
 					ZipFileAction.copyFileWithDir(file.getAbsolutePath(),
 							desDir,
 							fileName.substring(lastIndex, fileName.length()));
+				} catch (IOException e) {
+					Util.printDetail(e.toString());
+					e.printStackTrace();
+				}
+			} else if (isAttachment(fileName)) {
+				int lastIndex = fileName.lastIndexOf(Util.DIR_SPLIT);
+				String desDir = targetPath + Util.DIR_SPLIT + Util.Attachment;
+				try {
+					ZipFileAction.copyFileWithDir(file.getAbsolutePath(),
+							desDir, fileName.substring(lastIndex, fileName.length()));
 				} catch (IOException e) {
 					Util.printDetail(e.toString());
 					e.printStackTrace();
@@ -177,27 +185,31 @@ public class ClassificationAction implements IAction {
 	}
 
 	private boolean isColor(String fileName) {
-		return fileName.contains(Util.Color);
+		return fileName.contains(Util.Color + Util.DIR_SPLIT);
 	}
 
 	private boolean isLock(String fileName) {
-		return fileName.contains(Util.frameworks);
+		return fileName.contains(Util.frameworks + Util.DIR_SPLIT);
 	}
 
-	private boolean isHasDir(String fileName) {
-		return fileName.contains(Util.DIR_SPLIT);
+	private boolean isSingleFile(String fileName) {
+		return !fileName.contains(Util.DIR_SPLIT);
 	}
 
 	private boolean isOtherFile(String fileName) {
-		return fileName.contains(Util.Other);
+		return fileName.contains(Util.Other + Util.DIR_SPLIT);
 	}
 
 	private boolean isSpecialFile(String fileName) {
 		return fileName.contains(Util.Launcher);
 	}
 
+	private boolean isAttachment(String fileName) {
+		return fileName.contains(Util.Attachment + Util.DIR_SPLIT);
+	}
+
 	private boolean isDrawableArray(String fileName) {
-		return fileName.contains(Util.Lock);
+		return fileName.contains(Util.Lock + Util.DIR_SPLIT);
 	}
 
 	private static void createDir(String path) {
