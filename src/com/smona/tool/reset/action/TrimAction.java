@@ -64,8 +64,8 @@ public class TrimAction implements IAction {
 	private void trimFile(File file) {
 		if (Util.language_properties.equalsIgnoreCase(file.getName())) {
 			modifyScreenDensity(file);
-			// modifyDescript(file);
-			// modifyLanguageTitle(file);
+			modifyCnTitle(file);
+			modifyAuthor(file);
 		}
 	}
 
@@ -79,35 +79,48 @@ public class TrimAction implements IAction {
 		}
 	}
 
-	private void modifyLanguageTitle(File file) {
+	private void modifyCnTitle(File file) {
 		String lang = getPropValue(file, "zh_CN");
 		if (lang != null) {
 			String str = asciitocn(lang);
-			System.out.println("modifyLanguageTitle ios-8859-1: " + lang
-					+ "; gbk: " + str);
 			updateProps(file, "zh_CN", str);
 		}
 	}
 
-	private void modifyDescript(File file) {
-		String descript = getPropValue(file, "discript");
-		if (descript != null) {
-			String str = cntoascii(descript);
-			String str1 = asciitocn(str);
-			System.out.println("modifyDescript utf-8: " + descript + ", str: "
-					+ str + ", str1: " + str1);
-			updateProps(file, "discript", str);
+	private void modifyAuthor(File file) {
+		String author = getPropValue(file, "author");
+		if (author != null) {
+			String str = asciitocn(author);
+			updateProps(file, "author", str);
 		}
 	}
 
-	public static String asciitocn(String ascii) {
-		String[] splits = ascii.split("\\\\u");
-		StringBuilder sb = new StringBuilder(splits.length);
-		for (int i = 1; i < splits.length; i++) {
-			char ch = (char) Integer.valueOf(splits[i], 16).intValue();
-			sb.append(ch);
+	public static String asciitocn(String unicodeStr) {
+		if (unicodeStr == null) {
+			return null;
 		}
-		return sb.toString();
+		StringBuffer retBuf = new StringBuffer();
+		int maxLoop = unicodeStr.length();
+		for (int i = 0; i < maxLoop; i++) {
+			if (unicodeStr.charAt(i) == '\\') {
+				if ((i < maxLoop - 5)
+						&& ((unicodeStr.charAt(i + 1) == 'u') || (unicodeStr
+								.charAt(i + 1) == 'U')))
+					try {
+						retBuf.append((char) Integer.parseInt(
+								unicodeStr.substring(i + 2, i + 6), 16));
+						i += 5;
+					} catch (NumberFormatException localNumberFormatException) {
+						retBuf.append(unicodeStr.charAt(i));
+					}
+				else {
+					retBuf.append(unicodeStr.charAt(i));
+				}
+			} else {
+				retBuf.append(unicodeStr.charAt(i));
+			}
+		}
+		return retBuf.toString();
 	}
 
 	public static String cntoascii(String ascii) {
@@ -142,9 +155,8 @@ public class TrimAction implements IAction {
 		try {
 			props.load(new InputStreamReader(new FileInputStream(file), encode));
 			OutputStream fos = new FileOutputStream(file);
-			// props.setProperty(key, new String(value.getBytes(encode)));
 			props.setProperty(key, value);
-			props.store(new OutputStreamWriter(fos), "");
+			props.store(new OutputStreamWriter(fos, encode), null);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
